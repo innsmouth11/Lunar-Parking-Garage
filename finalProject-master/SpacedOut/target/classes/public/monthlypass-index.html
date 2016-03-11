@@ -1,0 +1,70 @@
+<html>
+<body>
+	<link rel="stylesheet"
+		href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<script src="//code.jquery.com/jquery.min.js"></script>
+	<div id="navBar"></div>
+	<script>
+		$.get("index.html", function(data) {
+			$("#navBar").replaceWith(data);
+		});
+	</script>
+
+	<!--  table to hold vehicles -->
+	<table style="width: 100%"
+		class="table table-striped table-bordered table-condensed">
+		<tr>
+			<td id="price"><b>Price</b></td>
+			<td id="exp"><b> Expiration Date </b></td>
+			<td id="cust"><b>Customer</b></td>
+			<td id="veh"><b>Vehicle</b></td>
+		</tr>
+	</table>
+	<!--  /table  -->
+	<!--  table holds all monthly pass information -->
+	<script type="text/javascript">
+		$(window)
+				.load(
+						function() { 
+							$
+									.ajax({
+										url : '/monthlypasses',
+										method : 'GET'
+									})
+									.then(
+											function(monthlypasses) { 
+
+												for (var i = 0; i < monthlypasses.length; i++) {
+
+													$('#price')
+															.append(
+																	'<tr><td>'
+																			+ '$'
+																			+ +monthlypasses[i].price
+																			+ '</td></tr>');
+													$('#exp')
+															.append(
+																	'<tr><td>'
+																			+ monthlypasses[i].expirationdate
+																			+ '</td></tr>');
+													$('#cust')
+															.append(
+																	'<tr><td>'
+																			+ monthlypasses[i].customer.firstname
+																			+ ' '
+																			+ monthlypasses[i].customer.lastname
+																			+ '</td></tr>');
+													$('#veh')
+															.append(
+																	'<tr><td>'
+																			+ monthlypasses[i].vehicle.make
+																			+ ' '
+																			+ monthlypasses[i].vehicle.model
+																			+ '</td></tr>');
+												}
+
+											});
+						});
+	</script>
+</body>
+</html>

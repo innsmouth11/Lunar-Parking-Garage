@@ -1,0 +1,141 @@
+<html>
+<head>
+<title>Vehicle Update</title>
+<style>
+input {
+	max-width: 20%;
+}
+
+select {
+	max-width: 20%;
+}
+</style>
+</head>
+<body>
+	<link rel="stylesheet"
+		href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<div id="navBar"></div>
+	<script>
+		$.get("index.html", function(data) {
+			$("#navBar").replaceWith(data);
+		});
+	</script>
+	<div align="center">
+		<select id="selectBox" class="form-control">
+			<option>Select a Vehicle to Update</option>
+		</select>
+	</div>
+	<script type="text/javascript">
+		$.ajax({
+			url : '/vehicles',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(function(vehicles) {
+			$("#selectBox").change(function() {
+				/* fill the ID field based on the select box selection */
+				$('#ID').val($("#selectBox").val());
+				var idCheck = $("#selectBox").val();
+				/* extract the correct vehicle based on ID, populate field */
+				for (var i = 0; i < vehicles.length; i++) {
+					if (vehicles[i].videntificationnumber == idCheck) {
+						$('#vmake').val(vehicles[i].model);
+						$('#vmodel').val(vehicles[i].make);
+						$('#vcolor').val(vehicles[i].color);
+						$('#vlocation').val(vehicles[i].location);
+						$('#vlpn').val(vehicles[i].licenseplatenumber);
+					}
+				}
+			});
+		});
+		$.ajax({
+			url : '/vehicles',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(
+				function(vehicles) {
+					for (var i = 0; i < vehicles.length; i++) {
+						$('#selectBox').append(
+								'<option value = "'+ vehicles[i].videntificationnumber + '">'
+										+ vehicles[i].make + ' '
+										+ vehicles[i].model + '</option>');
+					}
+				});
+	</script>
+	<div class="form-group">
+		<form>
+			<br>
+			<div align="center">
+				<div align="center">
+					<input type="text" id="vmake" placeholder="Make"
+						class="form-control"> <br>
+					<div align="center">
+						<input type="text" id="vmodel" placeholder='Model'
+							class="form-control"><br> <input type="text"
+							id="vcolor" placeholder="Color" class="form-control"><br>
+						<div align="center">
+							<input type="text" id="vlpn" placeholder="License Plate Number"
+								class="form-control"><br>
+							<div align="center">
+								<input type="text" id="vlocation" placeholder="Location"
+									class="form-control"><br>
+								<div align="center">
+									<input id="update" type="button" value="Update"
+										class="btn btn-default" />
+								</div>
+		</form>
+	</div>
+	<br>
+	<div id="status" align="center"></div>
+	<script type="text/javascript">
+		$('#update').click(function() {
+
+			$(function() {
+				$('#status').append('Updated!');
+			});
+
+			var updateVehicle = {};
+
+			/* id  */
+			var id = $('#selectBox').val();
+			updateVehicle.videntificationnumber = id;
+
+			/* make */
+			var vehMake = $('#vmake').val();
+			updateVehicle.make = vehMake;
+
+			/* model */
+			var vehModel = $('#vmodel').val();
+			updateVehicle.model = vehModel;
+
+			/* color */
+			var vehCol = $('#vcolor').val();
+			updateVehicle.color = vehCol;
+
+			/* LPN */
+			var vehLPN = $('#vlpn').val();
+			updateVehicle.licenseplatenumber = vehLPN;
+
+			/* location */
+			var vehLoc = $('#vlocation').val();
+			updateVehicle.location = vehLoc;
+
+			/* clear values */
+			$('#vmake').val('');
+			$('#vlocation').val('');
+			$('#vcolor').val('');
+			$('#vlpn').val('');
+			$('#vmodel').val('');
+
+			$.ajax({
+				url : '/vehicles',
+				method : 'PUT',
+				contentType : 'application/json',
+				data : JSON.stringify(updateVehicle)
+			}).then(function(updateVehicle) {
+
+			});
+		});
+	</script>
+</body>
+</html>

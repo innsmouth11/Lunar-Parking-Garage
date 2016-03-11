@@ -1,0 +1,87 @@
+<html>
+<head>
+<title>Vehicle Create</title>
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<style>
+input {
+	max-width: 20%;
+}
+
+select {
+	max-width: 20%;
+}
+</style>
+</head>
+<body>
+	<div id="navBar"></div>
+
+	<script>
+		$.get("index.html", function(data) {
+			$("#navBar").replaceWith(data);
+		});
+	</script>
+	<!-- form to get vehicle input date -->
+
+	<form>
+		<div class="form-group">
+		<div align="center">
+			<input type="text" id="make" placeholder="Make" class="form-control"
+				required><br> <div align="center"> <input type="text" id="model"
+				placeholder="Model" class="form-control" required> <div align="center"> <br>
+			<input type="text" id="licensePlate" placeholder="License Plate"
+				class="form-control" required> <br> <div align="center"> <input type="text"
+				id="location" placeholder="Location" class="form-control" required>
+			<br><div align="center"> <input type="text" id="color" placeholder="Color"
+				class="form-control" required><br>
+			<!-- submit button for form -->
+			<div align="center">
+			<input id="submitForm" type="submit" value="Submit"
+				class="btn btn-default" />
+				</div>
+		</div>
+	</form>
+
+
+
+	<script type="text/javascript">
+		/* upon clicking the submit button */
+		$('#submitForm').click(function() {
+
+			/* clear all text boxes in the submit form after the user submits */
+			$('#make').val();
+			$('#model').val();
+			$('#licensePlate').val();
+			$('#location').val();
+			$('#color').val();
+
+			/* make a new vehicle with information from the submit form */
+			var newVehicle = {};
+
+			var vehicleMake = $('#make').val();
+			var vehicleModel = $('#model').val();
+			var vehicleLPN = $('#licensePlate').val();
+			var vehicleLoc = $('#location').val();
+			var vehicleColor = $('#color').val();
+
+			newVehicle.make = vehicleMake;
+			newVehicle.model = vehicleModel;
+			newVehicle.licenseplatenumber = vehicleLPN;
+			newVehicle.location = vehicleLoc;
+			newVehicle.color = vehicleColor;
+
+			$.ajax({
+				url : '/vehicles',
+				method : 'POST',
+				contentType : 'application/json',
+				data : JSON.stringify(newVehicle)
+			}).then(function(newVehicle) {
+
+			}, function(error) {
+				console.log(JSON.stringify(error));
+			})
+		});
+	</script>
+</body>
+</html>

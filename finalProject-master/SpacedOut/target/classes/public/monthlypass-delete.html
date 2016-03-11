@@ -1,0 +1,73 @@
+<html>
+<head>
+<style>
+select {
+	max-width: 20%;
+}
+</style>
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<title>Monthly Pass Delete</title>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<body>
+	<script src="//code.jquery.com/jquery.min.js"></script>
+	<div id="navBar"></div>
+	<script>
+		$.get("index.html", function(data) {
+			$("#navBar").replaceWith(data);
+		});
+	</script>
+	<div align="center">
+	<select id="selectBox" class="form-control">
+		<option>Select a Monthly Pass</option>
+	</select>
+	</div>
+	<br>
+	<br>
+	<div align="center">
+	<input id="remove" type="button" value="Delete" class="btn btn-default" />
+	</div>
+	<script type="text/javascript">
+		/****************************************************/
+		/* append monthly passes to option list  */
+		/**************************************************/
+		$.ajax({
+			url : '/monthlypasses',
+			method : 'GET'
+		}).then(
+				function(monthlypasses) {
+
+					for (var i = 0; i < monthlypasses.length; i++) {
+						$('#selectBox').append(
+								'<option value = "'+ monthlypasses[i].monthlypassid + '">'
+										 + 'CUSTOMER: ' + monthlypasses[i].customer.firstname
+										+ ' ' + monthlypasses[i].customer.lastname
+										+ ' ' + 'EXPIRES: ' + monthlypasses[i].expirationdate
+										+ '</option>');
+					}
+				});
+
+		/***********************************/
+		/* upon clicking the remove button */
+		/**********************************/
+		$('#remove').click(function() {
+
+			/****************************/
+			/* remove a monthly pass */
+			/***************************/
+			$.ajax({
+				url : '/monthlypasses/' + $('#selectBox').val(),
+				method : 'DELETE',
+				contentType : 'application/json',
+			}).then(function(monthlypasses) {
+			
+			}, function(error) {
+				console.log(JSON.stringify(error));
+			})
+		});
+	</script>
+</body>
+</html>

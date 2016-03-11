@@ -1,0 +1,138 @@
+<html>
+<head>
+<title>Customer Update</title>
+<style>
+input {
+	max-width: 20%;
+}
+
+select {
+	max-width: 20%;
+}
+</style>
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+<body>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<div id="navBar"></div>
+
+	<script>
+		$.get("index.html", function(data) {
+			$("#navBar").replaceWith(data);
+		});
+	</script>
+	<div align="center">
+		<select id="selectBox" class="form-control">
+			<option>Select a Customer to Update</option>
+		</select>
+		
+	</div>
+	<script type="text/javascript">
+		$.ajax({
+			url : '/customers',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(function(customers) {
+			$("#selectBox").change(function() {
+				/* fill the ID field based on the select box selection */
+				$('#ID').val($("#selectBox").val());
+				var idCheck = $("#selectBox").val();
+				$('#ID').attr("disabled", true)
+				/* extract the correct title and status based on ID, populate field */
+				for (var i = 0; i < customers.length; i++) {
+					if (customers[i].identificationnumber == idCheck) {
+						/* ID matches, populate fields */
+						$('#first_name').val(customers[i].firstname);
+						$('#last_name').val(customers[i].lastname);
+						$('#email').val(customers[i].emailaddress);
+						$('#phone').val(customers[i].phonenumber);
+					}
+				}
+			});
+		});
+		$.ajax({
+			url : '/customers',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(
+				function(customers) {
+					for (var i = 0; i < customers.length; i++) {
+						$('#selectBox').append(
+								'<option value = "'+ customers[i].identificationnumber + '">'
+										+ customers[i].firstname + ' '
+										+ customers[i].lastname + '</option>');
+					}
+				});
+	</script>
+	<div class="form-group">
+		<form>
+
+			<br>
+			<div align="center">
+				<input type="text" id="first_name" placeholder="First name"
+					class="form-control" required> <br>
+				<div align="center">
+					<input type="text" id="last_name" placeholder="Last name"
+						class="form-control" required><br>
+					<div align="center">
+						<input type="text" id="email" placeholder="Email address"
+							class="form-control" required><br>
+						<div align="center">
+							<input type="text" id="phone" placeholder="Phone number"
+								class="form-control" required><br>
+							<div align="center">
+								<input id="update" type="submit" value="Update"
+									class="btn btn-default" />
+							</div>
+		</form>
+	</div>
+	<br>
+	<div id="status" align="center"></div>
+	<script type="text/javascript">
+		$('#update').click(function() {
+			
+
+			$(function() {
+				$('#status').append('Updated!');
+			});
+
+			var updateCustomer = {};
+
+			/* idlast name  */
+			var id = $('#selectBox').val();
+			updateCustomer.identificationnumber = id;
+
+			/* first_name */
+			var fname = $('#first_name').val();
+			updateCustomer.firstname = fname;
+
+			/* last_name */
+			var lname = $('#last_name').val();
+			updateCustomer.lastname = lname;
+
+			/* email */
+			var mail = $('#email').val();
+			updateCustomer.emailaddress = mail;
+
+			/* phone */
+			var phoneUpdate = $('#phone').val();
+			updateCustomer.phonenumber = phoneUpdate;
+
+			/* clear all values */
+			$('#first_name').val('');
+			$('#last_name').val('');
+			$('#email').val('');
+			$('#phone').val('');
+
+			$.ajax({
+				url : '/customers',
+				method : 'PUT',
+				contentType : 'application/json',
+				data : JSON.stringify(updateCustomer)
+			}).then(function(updateCustomer) {
+			});
+		});
+	</script>
+</body>
+</html>

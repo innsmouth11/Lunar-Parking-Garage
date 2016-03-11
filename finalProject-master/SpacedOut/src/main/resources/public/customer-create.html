@@ -1,0 +1,84 @@
+<html>
+<head>
+<title>Customer Create</title>
+<style>
+input {
+	max-width: 20%;
+}
+</style>
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+	<div id="navBar"></div>
+	<script>
+		$.get("index.html", function(data) {
+			$("#navBar").replaceWith(data);
+		});
+	</script>
+
+	<!--  get customer input data -->
+	<form>
+		<div class="form-group">
+			<div align="center">
+				<input type="text" id="fName" class="form-control"
+					placeholder="First name" class="col-xs-4" required><br>
+				<div align="center">
+					<input type="tel" id="lName" class="form-control"
+						placeholder="Last name" required><br>
+					<div align="center">
+						<input type="text" id="pNumber" class="form-control"
+							placeholder="Phone Number" required><br>
+					</div>
+					<div align="center">
+						<input type="email" placeholder="Enter a valid email" id="email"
+							class="form-control" required> <br> <br>
+						<div align="center">
+							<input id="submitForm" type="submit" class="btn btn-default"
+								value="Submit" />
+						</div>
+	</form>
+	</div>
+
+	<div id="status" align="center"></div>
+
+	<!--  upon click, create new customer request via Ajax -->
+	<script type="text/javascript">
+		/* upon clicking the submit button */
+		$('#submitForm').click(function() {
+
+			/* make a new customer with information from the submit form */
+			var newCustomer = {};
+
+			var lastName = $('#lName').val();
+			var firstName = $('#fName').val();
+			var phone = $('#pNumber').val()
+			var mail = $('#email').val()
+
+			newCustomer.firstname = firstName;
+			newCustomer.lastname = lastName;
+			newCustomer.phonenumber = phone;
+			newCustomer.emailaddress = mail;
+
+			/* /* clear all text boxes in the submit form after the customer submits */
+			/* 		$('#lName').val();
+					$('#fName').val();
+					$('#pNumber').val();
+					$('#email').val(); */
+
+			$.ajax({
+				url : '/customers',
+				method : 'POST',
+				contentType : 'application/json',
+				data : JSON.stringify(newCustomer)
+			}).then(function(newCustomer) {
+
+			}, function(error) {
+				console.log(JSON.stringify(error));
+			})
+		});
+	</script>
+	</div>
+</body>
+</html>

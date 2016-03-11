@@ -1,0 +1,144 @@
+<html>
+<head>
+<style>
+input {
+	max-width: 20%;
+}
+
+select {
+	max-width: 20%;
+}
+</style>
+<link rel="stylesheet"
+	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<title>Vehicle Update</title>
+</head>
+<body>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<div id="navBar"></div>
+	<script>
+		$.get("index.html", function(data) {
+			$("#navBar").replaceWith(data);
+		});
+	</script>
+	
+	
+	<div align="center">
+		<select id="selectBox" class="form-control">
+			<option>Select a Monthly Pass</option>
+		</select>
+	</div>
+
+	<!--  form to update monthly pass  -->
+	<div class="form-group">
+		<form>
+			<br>
+			<div align="center">
+				<input type="text" id="cust" placeholder="Customer"
+					class="form-control"> <br>
+				<div align="center">
+					<input type="text" id="veh" placeholder="Vehicle"
+						class="form-control"><br>
+					<div align="center">
+						<input type="number" id="price" placeholder="Price"
+							class="form-control" required><br>
+						<div align="center">
+							<input type="date" id="exp" placeholder="Expiration date"
+								class="form-control" required><br>
+							<div align="center">
+								<input id="update" type="button" value="Update"
+									class="btn btn-default" />
+							</div>
+		</form>
+	</div>
+	<br>
+		<div id="status" align="center"></div>
+
+	<script type="text/javascript">
+		var monthlyPassHolder;
+		$
+				.ajax({
+					url : '/monthlypasses',
+					method : 'GET',
+					contentType : 'application/json',
+				})
+				.then(
+						function(monthlypasses) {
+							$("#selectBox")
+									.change(
+											function() {
+
+												var idCheck = $("#selectBox")
+														.val();
+												$('#cust').attr("disabled",
+														true)
+												$('#veh')
+														.attr("disabled", true)
+
+												for (var i = 0; i < monthlypasses.length; i++) {
+													if (monthlypasses[i].monthlypassid == idCheck) {
+														$('#cust')
+																.val(
+																		monthlypasses[i].customer.firstname
+																				+ ' '
+																				+ monthlypasses[i].customer.lastname);
+														$('#veh')
+																.val(
+																		monthlypasses[i].vehicle.make
+																				+ ' '
+																				+ monthlypasses[i].vehicle.model);
+
+														monthlyPassHolder = monthlypasses[i];
+													}
+												}
+											});
+						});
+		$.ajax({
+			url : '/monthlypasses',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(
+				function(monthlypasses) {
+					for (var i = 0; i < monthlypasses.length; i++) {
+						$('#selectBox').append(
+								'<option value = "'+ monthlypasses[i].monthlypassid + '">'
+										+ monthlypasses[i].customer.firstname
+										+ ' '
+										+ monthlypasses[i].customer.lastname
+										+ ' ' + monthlypasses[i].expirationdate
+										+ '</option>');
+					}
+				});
+
+		$('#update').click(function() {
+
+			$(function() {
+				$('#status').append('Updated!');
+			});
+
+			var updateMonthlyPass = monthlyPassHolder;
+
+			var id = $('#selectBox').val();
+			updateMonthlyPass.monthlypassid = id;
+
+			var price = $('#price').val();
+			updateMonthlyPass.price = price;
+
+			var exp = $('#exp').val();
+			updateMonthlyPass.expirationdate = exp;
+
+			/* clear values */
+			$('#price').val('');
+			$('#exp').val('');
+
+			$.ajax({
+				url : '/monthlypasses',
+				method : 'PUT',
+				contentType : 'application/json',
+				data : JSON.stringify(updateMonthlyPass)
+			}).then(function(updateMonthlyPass) {
+			});
+		});
+	</script>
+</body>
+</html>

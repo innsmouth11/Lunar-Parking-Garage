@@ -1,0 +1,138 @@
+<html>
+<body>
+	<style>
+input {
+	max-width: 20%;
+}
+
+select {
+	max-width: 20%;
+}
+</style>
+	<script src="//code.jquery.com/jquery.min.js"></script>
+	<script type="text/javascript"></script>
+	<link rel="stylesheet"
+		href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<div id="navBar"></div>
+	<script>
+		$.get("index.html", function(data) {
+			$("#navBar").replaceWith(data);
+		});
+	</script>
+
+	<!--  populate select boxes with vehicles and customers -->
+
+
+
+	<form>
+		<div class="form-group"> <div align="center">
+			<select id="selectBoxVehicles" class="form-control" required>
+				<!--  use the value this select box to add to monthly pass object -->
+				<option>Select a Vehicle</option>
+			</select> <br> <div align="center"> <select id="selectBox" class="form-control" required>
+				<!--  use the value this select box to add to monthly pass object -->
+				<option>Select a Customer</option>
+			</select> <br> <div align="center"> <input type="number" value="Price" id="price" placeholder="Price"
+				class="form-control" required> <br><div align="center"> <input type="date"
+				id="expdate" class="form-control" required> <br> <div align="center">
+				<input id="submitForm" type="submit" value="Submit" class="btn btn-default"></div> 
+	</div>
+	</form>
+
+
+
+
+	<script>
+		/* empty objects to hold updated data */
+		var customerAddition = {};
+		var vehicleAddition = {};
+
+		$.ajax({
+			url : '/customers',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(
+				function(customers) {
+					for (var i = 0; i < customers.length; i++) {
+						$('#selectBox').append(
+								'<option value = "'+ customers[i].identificationnumber + '">'
+										+ customers[i].firstname + ' '
+										+ customers[i].lastname + '</option>');
+					}
+				});
+
+		$.ajax({
+			url : '/customers',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(function(customers) {
+			$("#selectBox").change(function() {
+				var idCheck = $("#selectBox").val();
+				/* make the text box uneditable */
+				for (var i = 0; i < customers.length; i++) {
+					if (customers[i].identificationnumber == idCheck) {
+						customerAddition = customers[i];
+					
+					}
+				}
+			});
+		});
+
+		$.ajax({
+			url : '/vehicles',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(
+				function(vehicles) {
+					for (var i = 0; i < vehicles.length; i++) {
+						$('#selectBoxVehicles').append(
+								'<option value = "'+ vehicles[i].videntificationnumber + '">'
+										+ vehicles[i].make + ' '
+										+ vehicles[i].model + '</option>');
+					}
+				});
+
+		$.ajax({
+			url : '/vehicles',
+			method : 'GET',
+			contentType : 'application/json',
+		}).then(function(vehicles) {
+			$("#selectBox").change(function() {
+				var idCheckVehicle = $("#selectBoxVehicles").val();
+				for (var i = 0; i < vehicles.length; i++) {
+					if (vehicles[i].videntificationnumber == idCheckVehicle) {
+						vehicleAddition = vehicles[i];
+					}
+				}
+			});
+		});
+
+		$('#submitForm').click(function() {
+
+			var newMonthlyPass = {};
+
+			var passPrice = $('#price').val();
+			var expireDate = $('#expdate').val();
+
+			newMonthlyPass.price = passPrice;
+
+			newMonthlyPass.expirationdate = expireDate;
+
+			newMonthlyPass.customer = customerAddition;
+
+			newMonthlyPass.vehicle = vehicleAddition;
+
+			$.ajax({
+				url : '/monthlypasses',
+				method : 'POST',
+				contentType : 'application/json',
+				data : JSON.stringify(newMonthlyPass)
+			}).then(function(newCustomer) {
+				
+			}, function(error) {
+				console.log(JSON.stringify(error));
+			})
+		});
+	</script>
+</body>
+</html>
